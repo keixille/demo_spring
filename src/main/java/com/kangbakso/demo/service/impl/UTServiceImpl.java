@@ -43,7 +43,7 @@ public class UTServiceImpl implements UTService {
     public String getValidDocument() {
         Document validDoc = mongoDatabase.getCollection("validity").find().first();
 
-        if (validDoc != null || validDoc.containsKey("key1") || validDoc.containsKey("key2")) {
+        if (validDoc != null && validDoc.containsKey("key1") && validDoc.containsKey("key2")) {
             return "VALID_DOCUMENT";
         }
         return null;

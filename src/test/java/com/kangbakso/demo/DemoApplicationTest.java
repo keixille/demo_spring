@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @EnableAutoConfiguration(exclude={MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
-class DemoApplicationTests {
+class DemoApplicationTest {
 
     @Test
     public void contextLoads() {
