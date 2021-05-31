@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class MetaController {
+public class MetaTagController {
     @GetMapping("/metatag")
     public String metatag() {
         String html = "<html>\n";

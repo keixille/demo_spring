@@ -1,6 +1,5 @@
 package com.kangbakso.demo.service;
 
-import com.kangbakso.demo.common.util.SwitchService;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -15,9 +14,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class MongoDbServiceTests {
+public class UTMongoServiceTests {
     @Autowired
-    private MongoDbService mongoDbService;
+    private UTService utService;
 
     @MockBean
     private MongoDatabase mongoDatabase;
@@ -35,7 +34,6 @@ public class MongoDbServiceTests {
         Mockito.when(mockMongoCollection.find()).thenReturn(mockIterableDocument);
         Mockito.when(mockIterableDocument.first()).thenReturn(mockDocument);
 
-        assertEquals("nasi goreng", mongoDbService.getFoodDocument());
+        assertEquals("nasi goreng", utService.getFoodDocument());
     }
-
 }

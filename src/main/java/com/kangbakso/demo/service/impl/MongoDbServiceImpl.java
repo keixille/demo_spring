@@ -11,7 +11,7 @@ public class MongoDbServiceImpl implements MongoDbService {
     @Autowired
     MongoDatabase mongoDatabase;
 
-    public String getFoodDocument() {
+    public String getDocument() {
         Document doc = mongoDatabase.getCollection("foods").find().first();
         return doc.getString("food_name");
     }
