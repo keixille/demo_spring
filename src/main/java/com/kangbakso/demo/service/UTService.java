@@ -8,4 +8,8 @@ public interface UTService {
     String getFoodDocument();
 
     String getValidDocument();
+
+    String getRandom();
+
+    boolean findRandom(String str);
 }

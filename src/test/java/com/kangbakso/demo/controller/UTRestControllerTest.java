@@ -89,4 +89,15 @@ public class UTRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("this is not valid document"));
     }
+
+    @Test
+    public void getRandomTest() throws Exception {
+        Mockito.when(utService.getRandom()).thenReturn("random1", "random2");
+        Mockito.when(utService.findRandom("random1")).thenReturn(true);
+        Mockito.when(utService.findRandom("random2")).thenReturn(false);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/random"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("random result"));
+    }
 }

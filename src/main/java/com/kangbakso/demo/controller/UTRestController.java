@@ -47,4 +47,15 @@ public class UTRestController {
 
         return "this is not valid document";
     }
+
+    @GetMapping("/random")
+    public String getRandom() {
+        String randomStr = utService.getRandom();
+
+        while(utService.findRandom(randomStr)) {
+            randomStr = utService.getRandom();
+        }
+
+        return "random result";
+    }
 }

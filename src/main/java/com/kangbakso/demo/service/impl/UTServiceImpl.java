@@ -6,6 +6,11 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.SecureRandom;
+import java.util.Base64;
+
 @Service
 public class UTServiceImpl implements UTService {
     @Autowired
@@ -47,5 +52,16 @@ public class UTServiceImpl implements UTService {
             return "VALID_DOCUMENT";
         }
         return null;
+    }
+
+    public String getRandom() {
+        SecureRandom rand = new SecureRandom();
+        byte[] byteArr = new byte[8];
+        rand.nextBytes(byteArr);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(byteArr);
+    }
+
+    public boolean findRandom(String str) {
+        return true;
     }
 }
