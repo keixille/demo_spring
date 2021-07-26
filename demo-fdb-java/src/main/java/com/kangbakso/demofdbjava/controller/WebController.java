@@ -3,6 +3,9 @@ package com.kangbakso.demofdbjava.controller;
 import com.apple.foundationdb.tuple.Tuple;
 import com.kangbakso.demofdbjava.db.FdbProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,58 +23,67 @@ public class WebController {
     byte[] array = new byte[7];
 
     @GetMapping("/simpleGet")
-    public String simpleGet(@RequestParam String id) {
+    public ResponseEntity simpleGet(@RequestParam String id) {
         try {
-            return fdbProvider.db.run(tr -> {
+            String result = fdbProvider.db.run(tr -> {
                 byte[] resultByte = tr.get(fdbProvider.userSubspace.subspace(Tuple.from(id)).pack()).join();
                 List<Object> resultList = Tuple.fromBytes(resultByte).getItems();
                 return resultList.toString();
             });
+            return new ResponseEntity<Object>(result, new HttpHeaders(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
-            return e.getMessage();
+            return new ResponseEntity<Object>(e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/simplePost")
-    public String simplePost(@RequestParam String id) {
+    public ResponseEntity simplePost(@RequestParam String id) {
         rand.nextBytes(array);
         String generatedName = new String(array, Charset.forName("UTF-8"));
+
         try {
-            return fdbProvider.db.run(tr -> {
+            String result = fdbProvider.db.run(tr -> {
                 tr.set(fdbProvider.userSubspace.pack(Tuple.from(id)), Tuple.from(generatedName, 0).pack());
                 return generatedName;
             });
+            return new ResponseEntity<Object>(result, new HttpHeaders(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
-            return e.getMessage();
+            return new ResponseEntity<Object>(e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @GetMapping("/simpleUpdate")
-    public String simpleUpdate(@RequestParam String id) {
+    public ResponseEntity simpleUpdate(@RequestParam String id) {
         try {
-            return fdbProvider.db.run(tr -> {
+            String result = fdbProvider.db.run(tr -> {
                 byte[] resultByte = tr.get(fdbProvider.userSubspace.subspace(Tuple.from(id)).pack()).join();
-                List<Object> resultList = Tuple.fromBytes(resultByte).getItems();
-                int counter = Integer.valueOf(resultList.get(1).toString()) + 1;
 
-                tr.set(fdbProvider.userSubspace.pack(Tuple.from(id)), Tuple.from(resultList.get(0), counter).pack());
+                if (resultByte != null) {
+                    tr.clear(fdbProvider.userSubspace.pack(Tuple.from(id)));
+                }
+
+                List<Object> resultList = Tuple.fromBytes(resultByte).getItems();
+                resultList.set(1, Integer.valueOf(resultList.get(1).toString()) + 1);
+
+                tr.set(fdbProvider.userSubspace.pack(Tuple.from(id)), Tuple.from(resultList.get(0), resultList.get(1)).pack());
                 return resultList.toString();
             });
+            return new ResponseEntity<Object>(result, new HttpHeaders(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
-            return e.getMessage();
+            return new ResponseEntity<Object>(e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/simpleDelete")
-    public String simpleDelete(@RequestParam String id) {
+    public ResponseEntity simpleDelete(@RequestParam String id) {
         try {
-            return fdbProvider.db.run(tr -> {
+            String result = fdbProvider.db.run(tr -> {
                 tr.clear(fdbProvider.userSubspace.pack(Tuple.from(id)));
                 return id;
             });
+            return new ResponseEntity<Object>(result, new HttpHeaders(), HttpStatus.ACCEPTED);
         } catch (Exception e) {
-            return e.getMessage();
+            return new ResponseEntity<Object>(e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
 }
