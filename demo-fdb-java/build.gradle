@@ -13,7 +13,6 @@ repositories {
 }
 
 dependencies {
-//	implementation 'org.foundationdb:fdb-java:6.3.12'
 	implementation files('libs/fdb-java-6.3.12.jar')
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
