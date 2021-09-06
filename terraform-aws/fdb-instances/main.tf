@@ -30,24 +30,22 @@ resource "aws_instance" "fdb_coordinator" {
 		Task	= var.tag_task
 	}
 
-	vpc_security_group_ids = [
-		"sg-0c6f5cf2fab60ccd3"
-	]
+	vpc_security_group_ids = var.security_group
 	
-	key_name = "ssh_personal"
+	key_name = var.key_name
 	
 	provisioner "remote-exec" {
 		connection {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./ssh_personal.pem")
+			private_key	= file("./${var.key_name}.pem")
 		}
 		
 		inline = [
 			"sudo apt update",
 			"sudo apt -y install npm",
-			"sudo npm install fdbtop",
+			"sudo npm install -g fdbtop",
 			"sudo wget https://www.foundationdb.org/downloads/6.3.15/ubuntu/installers/foundationdb-clients_6.3.15-1_amd64.deb",
 			"sudo wget https://www.foundationdb.org/downloads/6.3.15/ubuntu/installers/foundationdb-server_6.3.15-1_amd64.deb",
 			"sudo dpkg -i foundationdb-clients_6.3.15-1_amd64.deb foundationdb-server_6.3.15-1_amd64.deb",
@@ -59,8 +57,8 @@ resource "aws_instance" "fdb_coordinator" {
 }
 
 resource "aws_instance" "fdb_storages" {
-	# depends_on = [aws_instance.fdb_coordinator]
-	for_each = toset(formatlist("%d", range(1, var.number_of_storages)))
+	depends_on = [aws_instance.fdb_coordinator]
+	for_each = toset(formatlist("%d", range(1, var.number_of_storages + 1)))
 
 	ami           = var.ami
 	instance_type = var.instance_type
@@ -78,22 +76,20 @@ resource "aws_instance" "fdb_storages" {
 		Task	= var.tag_task
 	}
 
-	vpc_security_group_ids = [
-		"sg-0c6f5cf2fab60ccd3"
-	]
+	vpc_security_group_ids = var.security_group
 	
-	key_name = "ssh_personal"
+	key_name = var.key_name
 
 	provisioner "file" {
 		connection {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./ssh_personal.pem")
+			private_key	= file("./${var.key_name}.pem")
 		}
 
-		source      = "./ssh_personal.pem"
-		destination = "~/ssh_personal.pem"
+		source      = "./${var.key_name}.pem"
+		destination = "~/${var.key_name}.pem"
 	}
 	
 	provisioner "remote-exec" {
@@ -101,7 +97,7 @@ resource "aws_instance" "fdb_storages" {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./ssh_personal.pem")
+			private_key	= file("./${var.key_name}.pem")
 		}
 		
 		inline = [
@@ -110,8 +106,8 @@ resource "aws_instance" "fdb_storages" {
 			"sudo dpkg -i foundationdb-clients_6.3.15-1_amd64.deb foundationdb-server_6.3.15-1_amd64.deb",
 			"fdbcli --exec 'configure single ssd'",
 			"echo '${var.storage_conf}' | sudo tee /etc/foundationdb/foundationdb.conf",
-			"sudo chmod 600 ~/ssh_personal.pem",
-			"scp -3 -i ~/ssh_personal.pem -o StrictHostKeyChecking=no ubuntu@${aws_instance.fdb_coordinator.private_ip}:/etc/foundationdb/fdb.cluster ubuntu@${self.private_ip}:~/fdb.cluster",
+			"sudo chmod 600 ~/${var.key_name}.pem",
+			"scp -3 -i ~/${var.key_name}.pem -o StrictHostKeyChecking=no ubuntu@${aws_instance.fdb_coordinator.private_ip}:/etc/foundationdb/fdb.cluster ubuntu@${self.private_ip}:~/fdb.cluster",
 			"sudo mv -f ~/fdb.cluster /etc/foundationdb/fdb.cluster",
 			"sudo service foundationdb restart"
 		]
@@ -120,7 +116,7 @@ resource "aws_instance" "fdb_storages" {
 
 resource "aws_instance" "fdb_transactions" {
 	depends_on = [aws_instance.fdb_coordinator]
-	for_each = toset(formatlist("%d", range(1, var.number_of_transactions)))
+	for_each = toset(formatlist("%d", range(1, var.number_of_transactions + 1)))
 
 	ami           = var.ami
 	instance_type = var.instance_type
@@ -138,22 +134,20 @@ resource "aws_instance" "fdb_transactions" {
 		Task	= var.tag_task
 	}
 
-	vpc_security_group_ids = [
-		"sg-0c6f5cf2fab60ccd3"
-	]
+	vpc_security_group_ids = var.security_group
 	
-	key_name = "ssh_personal"
+	key_name = var.key_name
 
 	provisioner "file" {
 		connection {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./ssh_personal.pem")
+			private_key	= file("./${var.key_name}.pem")
 		}
 
-		source      = "./ssh_personal.pem"
-		destination = "~/ssh_personal.pem"
+		source      = "./${var.key_name}.pem"
+		destination = "~/${var.key_name}.pem"
 	}
 	
 	provisioner "remote-exec" {
@@ -161,7 +155,7 @@ resource "aws_instance" "fdb_transactions" {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./ssh_personal.pem")
+			private_key	= file("./${var.key_name}.pem")
 		}
 		
 		inline = [
@@ -169,9 +163,9 @@ resource "aws_instance" "fdb_transactions" {
 			"sudo wget https://www.foundationdb.org/downloads/6.3.15/ubuntu/installers/foundationdb-server_6.3.15-1_amd64.deb",
 			"sudo dpkg -i foundationdb-clients_6.3.15-1_amd64.deb foundationdb-server_6.3.15-1_amd64.deb",
 			"fdbcli --exec 'configure single ssd'",
-			"echo '${var.storage_conf}' | sudo tee /etc/foundationdb/foundationdb.conf",
-			"sudo chmod 600 ~/ssh_personal.pem",
-			"scp -3 -i ~/ssh_personal.pem -o StrictHostKeyChecking=no ubuntu@${aws_instance.fdb_coordinator.private_ip}:/etc/foundationdb/fdb.cluster ubuntu@${self.private_ip}:~/fdb.cluster",
+			"echo '${var.transaction_conf}' | sudo tee /etc/foundationdb/foundationdb.conf",
+			"sudo chmod 600 ~/${var.key_name}.pem",
+			"scp -3 -i ~/${var.key_name}.pem -o StrictHostKeyChecking=no ubuntu@${aws_instance.fdb_coordinator.private_ip}:/etc/foundationdb/fdb.cluster ubuntu@${self.private_ip}:~/fdb.cluster",
 			"sudo mv -f ~/fdb.cluster /etc/foundationdb/fdb.cluster",
 			"sudo service foundationdb restart"
 		]

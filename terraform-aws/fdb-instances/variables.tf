@@ -1,13 +1,12 @@
-// Exclusive
 variable "number_of_transactions" {
     type    = number
     default = 3
 }
 
-// Exclusive
 variable "number_of_storages" {
     type    = number
-    default = 3
+    # Reduce by 1 as coordinator is acting as storage
+    default = 2
 }
 
 variable "ami" {
@@ -50,7 +49,19 @@ variable "tag_task" {
     default = "Test Task"
 }
 
-variable "transaction_conf" {
+variable "security_group" {
+    type    = list(string)
+    default = [
+		"sg-0c6f5cf2fab60ccd3"
+	]
+}
+
+variable "key_name" {
+    type    = string
+    default = "ssh_personal"
+}
+
+variable "storage_conf" {
     type    = string
     default = <<EOT
 ## foundationdb.conf
@@ -107,7 +118,7 @@ logdir = /var/log/foundationdb
 EOT
 }
 
-variable "storage_conf" {
+variable "transaction_conf" {
     type    = string
     default = <<EOT
 ## foundationdb.conf
