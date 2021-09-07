@@ -33,25 +33,34 @@ resource "aws_instance" "fdb_coordinator" {
 	vpc_security_group_ids = var.security_group
 	
 	key_name = var.key_name
+
+	provisioner "file" {
+		connection {
+			type		= "ssh"
+			host		= self.private_ip
+			user		= "ubuntu"
+			private_key	= file("./provision/${var.key_name}.pem")
+		}
+
+		source      = "./provision"
+		destination = "~/"
+	}
 	
 	provisioner "remote-exec" {
 		connection {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./${var.key_name}.pem")
+			private_key	= file("./provision/${var.key_name}.pem")
 		}
 		
 		inline = [
-			"sudo apt update",
-			"sudo apt -y install npm",
-			"sudo npm install -g fdbtop",
-			"sudo wget https://www.foundationdb.org/downloads/6.3.15/ubuntu/installers/foundationdb-clients_6.3.15-1_amd64.deb",
-			"sudo wget https://www.foundationdb.org/downloads/6.3.15/ubuntu/installers/foundationdb-server_6.3.15-1_amd64.deb",
-			"sudo dpkg -i foundationdb-clients_6.3.15-1_amd64.deb foundationdb-server_6.3.15-1_amd64.deb",
+			"sudo chmod -R 777 ~/provision/scripts/",
+			# "sudo ~/provision/install-fdbtop.sh",
+			"sudo ~/provision/scripts/install-fdb.sh",
+			"sudo cp ~/provision/confs/storage-ebs.conf /etc/foundationdb/foundationdb.conf",
 			"fdbcli --exec 'configure single ssd'",
 			"sudo python3 /usr/lib/foundationdb/make_public.py",
-			"echo '${var.storage_conf}' | sudo tee /etc/foundationdb/foundationdb.conf"
 		]
 	}
 }
@@ -85,11 +94,11 @@ resource "aws_instance" "fdb_storages" {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./${var.key_name}.pem")
+			private_key	= file("./provision/${var.key_name}.pem")
 		}
 
-		source      = "./${var.key_name}.pem"
-		destination = "~/${var.key_name}.pem"
+		source      = "./provision"
+		destination = "~/"
 	}
 	
 	provisioner "remote-exec" {
@@ -97,17 +106,16 @@ resource "aws_instance" "fdb_storages" {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./${var.key_name}.pem")
+			private_key	= file("./provision/${var.key_name}.pem")
 		}
 		
 		inline = [
-			"sudo wget https://www.foundationdb.org/downloads/6.3.15/ubuntu/installers/foundationdb-clients_6.3.15-1_amd64.deb",
-			"sudo wget https://www.foundationdb.org/downloads/6.3.15/ubuntu/installers/foundationdb-server_6.3.15-1_amd64.deb",
-			"sudo dpkg -i foundationdb-clients_6.3.15-1_amd64.deb foundationdb-server_6.3.15-1_amd64.deb",
+			"sudo chmod -R 777 ~/provision/scripts/",
+			"sudo ~/provision/scripts/install-fdb.sh",
+			"sudo cp ~/provision/confs/storage-ebs.conf /etc/foundationdb/foundationdb.conf",
 			"fdbcli --exec 'configure single ssd'",
-			"echo '${var.storage_conf}' | sudo tee /etc/foundationdb/foundationdb.conf",
-			"sudo chmod 600 ~/${var.key_name}.pem",
-			"scp -3 -i ~/${var.key_name}.pem -o StrictHostKeyChecking=no ubuntu@${aws_instance.fdb_coordinator.private_ip}:/etc/foundationdb/fdb.cluster ubuntu@${self.private_ip}:~/fdb.cluster",
+			"sudo chmod 600 ~/provision/${var.key_name}.pem",
+			"scp -3 -i ~/provision/${var.key_name}.pem -o StrictHostKeyChecking=no ubuntu@${aws_instance.fdb_coordinator.private_ip}:/etc/foundationdb/fdb.cluster ubuntu@${self.private_ip}:~/fdb.cluster",
 			"sudo mv -f ~/fdb.cluster /etc/foundationdb/fdb.cluster",
 			"sudo service foundationdb restart"
 		]
@@ -143,11 +151,11 @@ resource "aws_instance" "fdb_transactions" {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./${var.key_name}.pem")
+			private_key	= file("./provision/${var.key_name}.pem")
 		}
 
-		source      = "./${var.key_name}.pem"
-		destination = "~/${var.key_name}.pem"
+		source      = "./provision"
+		destination = "~/"
 	}
 	
 	provisioner "remote-exec" {
@@ -155,17 +163,16 @@ resource "aws_instance" "fdb_transactions" {
 			type		= "ssh"
 			host		= self.private_ip
 			user		= "ubuntu"
-			private_key	= file("./${var.key_name}.pem")
+			private_key	= file("./provision/${var.key_name}.pem")
 		}
 		
 		inline = [
-			"sudo wget https://www.foundationdb.org/downloads/6.3.15/ubuntu/installers/foundationdb-clients_6.3.15-1_amd64.deb",
-			"sudo wget https://www.foundationdb.org/downloads/6.3.15/ubuntu/installers/foundationdb-server_6.3.15-1_amd64.deb",
-			"sudo dpkg -i foundationdb-clients_6.3.15-1_amd64.deb foundationdb-server_6.3.15-1_amd64.deb",
+			"sudo chmod -R 777 ~/provision/scripts/",
+			"sudo ~/provision/scripts/install-fdb.sh",
+			"sudo cp ~/provision/confs/transaction-ebs.conf /etc/foundationdb/foundationdb.conf",
 			"fdbcli --exec 'configure single ssd'",
-			"echo '${var.transaction_conf}' | sudo tee /etc/foundationdb/foundationdb.conf",
-			"sudo chmod 600 ~/${var.key_name}.pem",
-			"scp -3 -i ~/${var.key_name}.pem -o StrictHostKeyChecking=no ubuntu@${aws_instance.fdb_coordinator.private_ip}:/etc/foundationdb/fdb.cluster ubuntu@${self.private_ip}:~/fdb.cluster",
+			"sudo chmod 600 ~/provision/${var.key_name}.pem",
+			"scp -3 -i ~/provision/${var.key_name}.pem -o StrictHostKeyChecking=no ubuntu@${aws_instance.fdb_coordinator.private_ip}:/etc/foundationdb/fdb.cluster ubuntu@${self.private_ip}:~/fdb.cluster",
 			"sudo mv -f ~/fdb.cluster /etc/foundationdb/fdb.cluster",
 			"sudo service foundationdb restart"
 		]
