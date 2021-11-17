@@ -1,6 +1,6 @@
 package com.kangbakso.spring_tutorial.controller;
 
-import com.kangbakso.spring_tutorial.data.redis.Student;
+import com.kangbakso.spring_tutorial.entity.redis.Student;
 import com.kangbakso.spring_tutorial.repository.redis.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

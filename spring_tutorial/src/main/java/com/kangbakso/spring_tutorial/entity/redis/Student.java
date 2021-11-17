@@ -1,4 +1,4 @@
-package com.kangbakso.spring_tutorial.data.redis;
+package com.kangbakso.spring_tutorial.entity.redis;
 
 import org.springframework.data.redis.core.RedisHash;
 
