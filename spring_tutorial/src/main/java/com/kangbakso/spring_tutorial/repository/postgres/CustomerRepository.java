@@ -13,8 +13,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE customer SET\n" +
-            " first_name = :firstName),\n" +
-            " last_name = :lastName)\n" +
+            " first_name = :firstName,\n" +
+            " last_name = :lastName\n" +
             " WHERE customer_id = :customerId\n",
             nativeQuery = true)
     void updateCustomer(@Param("customerId") long customerId,
