@@ -25,4 +25,10 @@ public class Customer {
     @NotNull
     @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    public String toString() {
+        return "Customer ID: " + this.getId() + " - " +
+                "FirstName: " + this.getFirstName() + " - " +
+                "LastName: " + this.getLastName() + "\n";
+    }
 }

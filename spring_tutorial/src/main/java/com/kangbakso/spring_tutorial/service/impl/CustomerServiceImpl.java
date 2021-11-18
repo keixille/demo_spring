@@ -6,6 +6,7 @@ import com.kangbakso.spring_tutorial.dto.CustomerUpdateRequestDTO;
 import com.kangbakso.spring_tutorial.entity.postgres.Customer;
 import com.kangbakso.spring_tutorial.mapper.request.CustomerRequestMapper;
 import com.kangbakso.spring_tutorial.mapper.response.CustomerResponseMapper;
+import com.kangbakso.spring_tutorial.producer.CustomerProducer;
 import com.kangbakso.spring_tutorial.repository.postgres.CustomerRepository;
 import com.kangbakso.spring_tutorial.service.CustomerService;
 import org.jboss.logging.Logger;
@@ -22,10 +23,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRequestMapper customerRequestMapper;
     private final CustomerResponseMapper customerResponseMapper;
+    private CustomerProducer customerProducer;
 
-    public CustomerServiceImpl(CustomerRequestMapper customerRequestMapper, CustomerResponseMapper customerResponseMapper) {
+    public CustomerServiceImpl(CustomerRequestMapper customerRequestMapper,
+                               CustomerResponseMapper customerResponseMapper,
+                               CustomerProducer customerProducer) {
         this.customerRequestMapper = customerRequestMapper;
         this.customerResponseMapper = customerResponseMapper;
+        this.customerProducer = customerProducer;
     }
 
     @Override
@@ -35,6 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = customerRequestMapper.convertToEntity(customerRequestDTO);
         Customer savedCustomer = customerRepository.save(customer);
 
+        customerProducer.produce("create-customer", savedCustomer.toString());
         return customerResponseMapper.convertToDTO(savedCustomer);
     }
 
