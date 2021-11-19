@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.util.function.*;
 import java.util.logging.Logger;
 
-public class FunctionalInterface {
+public class FunctionalInterfaceExample {
 
-    private Logger logger = Logger.getLogger(FunctionalInterface.class.getName());
+    private Logger logger = Logger.getLogger(FunctionalInterfaceExample.class.getName());
 
     private Function<String, Integer> chainFunction1 = String::length;
     private Function<Integer, Integer> chainFunction2 = val -> {
@@ -25,17 +25,17 @@ public class FunctionalInterface {
     private BiConsumer<String, Integer> biConsumer1 = (name, val) -> {};
     private Supplier<LocalDateTime> supplier1 = LocalDateTime::now;
 
-    public void doFunction() {
+    private void doFunction() {
         Integer chainResult = chainFunction1.andThen(chainFunction2).apply("sony tulung");
         Double biFunctionResult = biFunction1.apply(3, 4);
     }
 
-    public void doUnaryOperator() {
+    private void doUnaryOperator() {
         Integer unaryOperatorResult = unary1.apply(12);
         Integer binaryOperatorResult = binary1.apply(2, 3);
     }
 
-    public void doPredicate() {
+    private void doPredicate() {
         Boolean predicateResult = predicate1.test("Jackson");          // true
         Boolean biPredicateResult = biPredicate1.test("asd", 3);    // true
 
@@ -53,7 +53,7 @@ public class FunctionalInterface {
         Boolean negateResult = negatePredicate.test("Roza");
     }
 
-    public void doConsumerSupplier() {
+    private void doConsumerSupplier() {
         consumer1.accept("Eaten");
         biConsumer1.accept("EatenNumber", 12);
         LocalDateTime dateTime = supplier1.get();

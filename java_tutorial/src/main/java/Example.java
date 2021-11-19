@@ -1,40 +1,21 @@
-import SubDirectory.FunctionalInterface;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.*;
-import java.util.stream.Collectors;
+import SubDirectory.FunctionalInterfaceExample;
+import SubDirectory.StreamExample;
+import SubDirectory.TimeExample;
 
 public class Example {
-    private static FunctionalInterface functionalInterface;
+    private static FunctionalInterfaceExample functionalInterfaceExample;
+    private static StreamExample streamExample;
+    private static TimeExample timeExample;
 
     static {
-        functionalInterface = new FunctionalInterface();
+        functionalInterfaceExample = new FunctionalInterfaceExample();
+        streamExample = new StreamExample();
+        timeExample = new TimeExample();
     }
 
     public static void main(String[] args) {
-        functionalInterface.doAll();
-        // Chain Function
-//        System.out.println(function1.andThen(function2).apply("sony tulung"));
-//        List<String> list = Arrays.asList("senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "minggu");
-//
-//
-//        // For Each
-//        list.forEach(System.out::println);
-//
-//        // Filter
-//        List<String> result = list.stream()
-//                .filter(str -> str.equals("senin") || str.equals("selasa"))
-//                .collect(Collectors.toList());
-//        System.out.println(result);
-//
-//        String resultStr = list.stream()
-//                .filter(str -> str.equals("kamis"))
-//                .findAny()
-//                .orElse(null);
-//        System.out.println(resultStr);
-
-        // Map
+        functionalInterfaceExample.doAll();
+        streamExample.doAll();
+        timeExample.doAll();
     }
 }
