@@ -16,6 +16,26 @@ configurations {
 	}
 }
 
+jacocoTestReport {
+	reports {
+		xml.enabled true
+	}
+}
+test.finalizedBy jacocoTestReport
+
+sonarqube {
+	properties {
+		property 'sonar.sourceEncoding', 'UTF-8'
+		property 'sonar.host.url', 'http://192.168.144.102:9000'
+		property 'sonar.login', 'admin'
+		property 'sonar.password', 'asdasd123123'
+	}
+}
+
+tasks.named('sonarqube').configure {
+	dependsOn test
+}
+
 repositories {
 	mavenCentral()
 }

@@ -1,4 +1,4 @@
-package com.kangbakso.spring_tutorial.dto;
+package com.kangbakso.spring_tutorial.dto.response;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerRequestDTO {
+public class CustomerResponseDTO {
+    @NotNull
+    private String customer_id;
+
     @NotNull
     private String first_name;
 

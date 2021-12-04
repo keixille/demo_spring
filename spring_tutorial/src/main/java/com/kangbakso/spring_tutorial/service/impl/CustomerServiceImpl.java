@@ -1,8 +1,8 @@
 package com.kangbakso.spring_tutorial.service.impl;
 
-import com.kangbakso.spring_tutorial.dto.CustomerRequestDTO;
-import com.kangbakso.spring_tutorial.dto.CustomerResponseDTO;
-import com.kangbakso.spring_tutorial.dto.CustomerUpdateRequestDTO;
+import com.kangbakso.spring_tutorial.dto.request.CustomerRequestDTO;
+import com.kangbakso.spring_tutorial.dto.response.CustomerResponseDTO;
+import com.kangbakso.spring_tutorial.dto.request.CustomerUpdateRequestDTO;
 import com.kangbakso.spring_tutorial.entity.postgres.Customer;
 import com.kangbakso.spring_tutorial.mapper.request.CustomerRequestMapper;
 import com.kangbakso.spring_tutorial.mapper.response.CustomerResponseMapper;
@@ -12,6 +12,8 @@ import com.kangbakso.spring_tutorial.service.CustomerService;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 
 @Service
@@ -60,7 +62,12 @@ public class CustomerServiceImpl implements CustomerService {
                 customerId,
                 customerUpdateRequestDTO.getFirst_name(),
                 customerUpdateRequestDTO.getLast_name());
-        Customer updatedCustomer = customerRepository.findById(customerId).get();
+
+        Optional<Customer> optionalUpdatedCustomer = customerRepository.findById(customerId);
+        Customer updatedCustomer = null;
+        if (optionalUpdatedCustomer.isPresent()) {
+            updatedCustomer = optionalUpdatedCustomer.get();
+        }
         return customerResponseMapper.convertToDTO(updatedCustomer);
     }
 

@@ -1,7 +1,7 @@
 package com.kangbakso.spring_tutorial.mapper.response;
 
 import com.kangbakso.spring_tutorial.common.DataMapper;
-import com.kangbakso.spring_tutorial.dto.CustomerResponseDTO;
+import com.kangbakso.spring_tutorial.dto.response.CustomerResponseDTO;
 import com.kangbakso.spring_tutorial.entity.postgres.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

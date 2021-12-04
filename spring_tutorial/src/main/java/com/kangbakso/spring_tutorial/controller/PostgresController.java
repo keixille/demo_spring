@@ -1,9 +1,11 @@
 package com.kangbakso.spring_tutorial.controller;
 
-import com.kangbakso.spring_tutorial.dto.CustomerRequestDTO;
-import com.kangbakso.spring_tutorial.dto.CustomerResponseDTO;
-import com.kangbakso.spring_tutorial.dto.CustomerUpdateRequestDTO;
+import com.kangbakso.spring_tutorial.common.BaseController;
 import com.kangbakso.spring_tutorial.dto.ErrorResponseDTO;
+import com.kangbakso.spring_tutorial.dto.ResponseDTO;
+import com.kangbakso.spring_tutorial.dto.request.CustomerRequestDTO;
+import com.kangbakso.spring_tutorial.dto.request.CustomerUpdateRequestDTO;
+import com.kangbakso.spring_tutorial.dto.response.CustomerResponseDTO;
 import com.kangbakso.spring_tutorial.repository.postgres.CustomerRepository;
 import com.kangbakso.spring_tutorial.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class PostgresController {
+public class PostgresController extends BaseController {
     @Autowired
     CustomerRepository customerRepository;
 
@@ -21,11 +23,9 @@ public class PostgresController {
     CustomerService customerService;
 
     @PostMapping("/postgres/customer")
-    public ResponseEntity postCustomer(@RequestBody CustomerRequestDTO customerRequestDTO) {
-        HttpHeaders responseHeaders = new HttpHeaders();
+    public ResponseEntity<Object> postCustomer(@RequestBody CustomerRequestDTO customerRequestDTO) {
         CustomerResponseDTO customerResponseDTO = customerService.createCustomer(customerRequestDTO);
-
-        return new ResponseEntity<>(customerResponseDTO, responseHeaders, HttpStatus.OK);
+        return constructResponse(customerResponseDTO);
     }
 
     @GetMapping("/postgres/customer/{customer_id}")

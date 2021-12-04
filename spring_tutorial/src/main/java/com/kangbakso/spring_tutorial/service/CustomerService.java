@@ -1,8 +1,8 @@
 package com.kangbakso.spring_tutorial.service;
 
-import com.kangbakso.spring_tutorial.dto.CustomerRequestDTO;
-import com.kangbakso.spring_tutorial.dto.CustomerResponseDTO;
-import com.kangbakso.spring_tutorial.dto.CustomerUpdateRequestDTO;
+import com.kangbakso.spring_tutorial.dto.request.CustomerRequestDTO;
+import com.kangbakso.spring_tutorial.dto.response.CustomerResponseDTO;
+import com.kangbakso.spring_tutorial.dto.request.CustomerUpdateRequestDTO;
 
 public interface CustomerService {
     CustomerResponseDTO createCustomer(CustomerRequestDTO customerRequestDTO);
